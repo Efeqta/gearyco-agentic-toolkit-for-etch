@@ -128,11 +128,17 @@ Full rules and examples: `agent-docs/etch-markup.md`.
 - **Full pages** are built section by section, with no `<main>` or other wrapper around the sections.
 - **Cards** are their own BEM block (`.post-card`, never `.section__card`), with a semantic tag: `<article>` for standalone content, `<li>` inside a list. Never default to `<div>`, and never use the deprecated `flex-div`.
 - **Grids and lists** are their own BEM block (`.posts-list`, `.fx-spotlight-grid`, never `.section__grid`). Use `<ul>`/`<ol>` for collections of similar items and loop the `<li>`; use `<div>` only for unrelated panels that share a layout.
-- **Components.** Anything reusable (cards, list rows, section intros, timelines, CTAs, anything used more than once) is an Etch component with editable props, never repeated hand-built markup.
-  - Every piece of content is a prop (`text`, `url`, `image`, `select` for variants). Heading levels are a `select` prop applied through a dynamic element.
-  - Repeated items come from a loop over a data source passing values into the props.
+- **Components.** Elements that repeat (cards, buttons, badges, list rows, gallery photos, accordion items) are Etch components with editable props, never repeated hand-built markup. Variants (style, theme) are a prop.
+  - **Whole sections are rarely components.** Hero, media + content, gallery and feature grids are patterns: sections with a common HTML layout and shared BEM classes, copied from one page to another and edited, using components for their repeating parts. If the site already has the section on another page, copy it (blocks copy/paste API) and reuse its classes; otherwise build it once as plain markup. The same section keeps the same structure and class names on every page. Section components are the exceptions (CTA, contact, full-bleed image section, header, footer). A section must repeat with only the content changing to qualify; a too-specific section (fixed photo count, one-off layout) is not a component.
+  - **Compose with subcomponents and slots.** Optional or reusable parts (review badge, button, rating) are their own components inserted into a slot of the parent, never a boolean show/hide prop. Variable content (paragraphs, lists, blocks) goes in a slot; lists of parts are a parent plus item components (accordion + accordion items, each with a body slot).
+  - **Group props.** Related props go in one `group` prop (`Primary Button`: label, url, target). No component has 10+ flat props.
+  - **URLs are plain text props.** The `url` prop type isn't editable; don't use it.
+  - Every other piece of content is a prop (`text`, `image`, `select` for variants). Heading levels are a `select` prop applied through a dynamic element.
+  - Loop over a data source only for items that repeat across the website. One-page items are instances with props set directly.
   - Never build class names from props (`card--{props.variant}`); use `data-variant="{props.variant}"` styled with `&[data-variant="…"]` inside the base selector.
   - A component that can be a list item has a `tag` select prop (`li`, `article`, `div`) on an `<etch:element tag={props.tag}>` root. In a list, set `tag` to `li` directly inside the `ul`/`ol`; never wrap it in an extra `li`.
+- **Data sources** are for content that repeats across the site. Keep company data (contact, opening hours, rating) in one global `company` source. Don't create a source per page gallery or for one-page feature cards.
+- **Image loading.** Below-the-fold images are lazy loaded by default. The hero image gets `fetchpriority="high"` and is never lazy.
 - **Images.** Prefer `<etch:img />` over `<img />`: `src="{item.featuredImage}"` for a URL, `mediaId="{item.image.id}"` for an ID. The keys `.featuredImage.id` and `.featuredImage.url` don't exist.
 - **Conditions.** Don't add them defensively; assume content exists unless the user asks or it clearly matters. There's no `{#else}` and no inline `??` fallback in dynamic data; use paired `{#if x}` / `{#if !x}` blocks. Check the Etch docs for comparison syntax.
 

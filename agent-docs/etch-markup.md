@@ -100,12 +100,36 @@ Good example — non-list panels sharing a grid layout:
 
 ## Components
 
-Anything that would typically be a component **must be built as an Etch component with editable props** — never as hand-built, repeated markup on a page. This includes cards (post, tool, appearance, product, testimonial, social), list rows, section headers/intros, timelines, CTAs, and any block used more than once or likely to be reused.
+A component is for an **element that repeats**, on one page or across the site: cards, buttons, badges, list rows, gallery photos, accordion items, timeline steps. The same component can look different (styles, themes) through a prop. Repeated elements **must be built as Etch components with editable props**, never as hand-built, repeated markup.
+
+### When not to build a component
+
+- **A whole section is rarely a component.** Default to plain markup on the page (section > container > content), with the repeating parts inside it as components. Before making a section a component, it has to pass this test: the same structure will appear at least twice, and only the content differs. "It might be reused" doesn't pass.
+- Legitimate section components are the exceptions: CTA, contact, a full-bleed section that is just an image, header, footer.
+- **Hero, media and content side by side, gallery, feature grid and similar sections are patterns, not components.** A pattern is a section with a common HTML layout and a shared BEM structure (`hero`, `hero__title`, …), so its CSS is defined once. The next page gets the same section by copying it from an earlier page and editing the content, instead of flipping props on a component. If a pattern needs a button, badge, card or photo, those are components placed inside it.
+- **Reuse the pattern before building a new one.** If the site already has the section on another page (hero, media + content, gallery), copy it with the blocks copy/paste API (see `etch-copy-paste.md`; verify the method names on the live tab) and adapt the content. Reuse its existing classes; don't create near-duplicates (`hero-2`, `page-hero`). If the section doesn't exist yet, build it once as plain markup with a generic block name (`hero`, `media-content`, `gallery`).
+- Keep patterns consistent: the same section keeps the same markup structure and class names across pages. Page-specific differences go in content and in modifiers (`hero--compact`), not in a different structure.
+- Etch's own pattern library (the Insert command) is not readable by scripts and isn't part of these rules. Don't depend on it.
+- A component that is too specific is a smell: fixed number of photos, fixed number of buttons, staggered layouts tied to one design. That's a page section.
+
+### Subcomponents and slots
+
+- **Optional or independently reusable parts are their own components**, not a boolean prop on the parent. A review badge, rating, button or label is built once and inserted where needed. Don't add `showBadge` / `hasReviews` props. The parent offers a slot, the page puts the badge instance in it, and the parent's CSS positions it.
+- **Variable content goes in a slot.** Props are for simple values (a label, an image, a variant). If the content is a paragraph, a list, or other blocks, use a slot.
+- **Lists of parts are parent plus item components.** An accordion is an `Accordion` component whose slot takes `Accordion Item` instances, each with a title prop and a slot for its body. Likewise a gallery with `Gallery Photo` items. Use the kit's `slot()` and `instance()`.
+
+### Props
+
+- **Group related props.** A component never has 10+ flat props. Put props that belong together in one `group` prop named for what they describe: `Primary Button` (label, url, target), `Secondary Button`, `Image` (image, alt, ratio), `Heading` (text, level). A component whose props don't group into a handful of groups is probably two components.
+- **URLs are plain text props.** Don't use the `url` prop type: it isn't editable. A link is a text prop for the URL, plus a text prop for the target if needed.
+- Every piece of content is a prop (text, image, `select` for variants) or a slot.
+
+### Building them
 
 - Create the component with `etch.components.createAsync(name)`, then define it with `etch.components.updateAsync(id, { name, key, description, properties, blocks })`. Place it with an `etch/component` block (`componentId`, prop values in `attributes`). The shared kit's `upsertComponent()` and `instance()` do both (see `etch-shared-helpers.md`).
-- Every piece of content is a prop: text, links (`url`), images (`image`), and variants/modifiers (`select`). Reference them in the component's blocks as `{props.key}`; use `group` props to keep related values together.
+- Reference props in the component's blocks as `{props.key}`.
 - Heading levels inside a component are a `select` prop (e.g. `h2`, `h3`) applied through a dynamic element, not a hardcoded tag.
-- Repeated items come from a loop over a data source (or content type) that passes values into the component's props — don't paste instance after instance by hand.
+- Items that repeat across the site come from a loop over a data source (or content type) passing values into the component's props. Items that appear on one page only are instances with their props set directly (see Data sources).
 - The component's classes follow BEM and its CSS lives on its own Etch selectors, like any other block.
 - Don't build class names from props (`card--{props.variant}`): Etch only creates and links selectors for literal classes, so the modifier's CSS may never be output. Put the variant in a data attribute (`data-variant="{props.variant}"`) and style it nested in the base selector (`&[data-variant="featured"] { … }`), or let the parent set a scoped custom property.
 
@@ -120,7 +144,18 @@ const tagProp = {
 };
 ```
 
+## Data sources
+
+A data source is for content that **repeats across the website**: the same items shown on several pages, or generated into pages. If content appears in one place, put it directly in the page's props, slots and markup.
+
+- Feature cards, steps, FAQs and similar content that appears on one page are instances with their props set directly. Not a data source plus loop.
+- A gallery needs no source per page. Build a single `Gallery Photo` component with an `image` prop and place instances on each page.
+- Use **one global `company` source** for business data shared across the site: name, contact person, phone and email, address, opening hours, rating. Don't create separate sources for contacts, opening hours and reviews. Keep it a single object that header, footer, contact section and review badge all read from.
+- Before creating a data source, state where its content is used. If the answer is one page, don't create it.
+
 ## Images
+
+Images below the fold are lazy loaded: `loading="lazy"` and `decoding="async"` by default, including images inside components. The hero image (the largest above-the-fold image) is the exception: `fetchpriority="high"` and no lazy loading. If a component can appear in a hero, the loading behavior comes from the instance, not hardcoded.
 
 When asked for images, favor the `<etch:img />` element instead of using a plain `<img />` element:
 

@@ -80,7 +80,7 @@ return task(async () => {
 | `svg(name, viewBox, shapes, attrs)` | Inline SVG, `shapes` as `[[tag, attrs], …]` |
 | `section(cls, name, children, extra)` | `<section data-etch-element="section">` |
 | `container(cls, name, children, extra)` | `<div data-etch-element="container">` |
-| `prop.text / url / image / select / object / repeater` | Component prop definitions |
+| `prop.text / url / image / select / object / repeater` | Component prop definitions. Don't use `prop.url`: URLs are `prop.text` (the `url` type isn't editable) |
 | `tagProp(options)`, `headingProp(options)` | Standard `tag` and `headingLevel` select props |
 
 ### `upsert.js`
