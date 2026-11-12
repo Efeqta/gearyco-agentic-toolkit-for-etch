@@ -35,7 +35,7 @@ const addKeyframes = async (name, body) => {
   let sheet = etch.stylesheets.list().find((s) => s.name === 'Animations');
   if (!sheet) sheet = etch.stylesheets.get(await etch.stylesheets.createAsync({ name: 'Animations', css: '' }));
   const css = etch.stylesheets.get(sheet.id).css ?? '';
-  if (new RegExp(`@keyframes\\s+${name}\\b`).test(css)) return 'exists';
+  if (new RegExp(`@keyframes\\s+${name}(?![\\w-])`).test(css)) return 'exists';
   await etch.stylesheets.appendAsync(sheet.id, `@keyframes ${name} {\n${body}\n}`);
   return 'added';
 };

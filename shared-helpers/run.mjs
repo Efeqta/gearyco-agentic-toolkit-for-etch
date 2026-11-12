@@ -86,10 +86,13 @@ const scriptPath = join(tmpdir(), `etch-run-${basename(projectDir)}-${process.pi
 writeFileSync(scriptPath, code);
 process.on('exit', () => rmSync(scriptPath, { force: true }));
 
-const run = spawnSync('npx', ['@digital-gravy/etch-connector', 'eval', '-t', tab, '-f', scriptPath, '--timeout', String(opts.timeout)], {
+const q = (s) => (process.platform === 'win32' ? `"${s}"` : s);
+const run = spawnSync('npx', ['@digital-gravy/etch-connector', 'eval', '-t', q(tab), '-f', q(scriptPath), '--timeout', String(opts.timeout)], {
   encoding: 'utf8',
   maxBuffer: 64 * 1024 * 1024,
+  shell: process.platform === 'win32',
 });
+if (run.error) console.error(run.error.message);
 
 const lines = `${run.stdout ?? ''}`.split('\n').filter((l) => l.trim() && !l.startsWith('[etch-studio]'));
 let result = lines.join('\n');
