@@ -73,6 +73,10 @@ follow the linked file:
   `agent-docs/etch-css-reset.md` (what the reset already handles).
 - **Automatic.css (ACSS):** If this project uses the Automatic.css framework,
   read `agent-docs/automatic-css.md` BEFORE writing or editing styles.
+- **Multilanguage:** Only when the user says a site is or will be multilingual,
+  read `agent-docs/etch-multilanguage.md` and use the i18n kit. Never apply the
+  i18n field set, per-language routes or hreflang to a single-language site, and
+  do not propose them unasked.
 - **Keyframes / animations:** Before adding or editing `@keyframes`, read
   `agent-docs/etch-keyframes.md`.
 - **Cross-site copy:** Before copying blocks between Etch tabs or sites, read

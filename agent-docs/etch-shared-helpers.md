@@ -8,7 +8,10 @@ shared-helpers/
 └── etch/
     ├── blocks.js    block and prop builders
     ├── upsert.js    create-or-update helpers, task() wrapper
-    └── audit.js     read-only audits with compact output
+    ├── audit.js     read-only audits with compact output
+    └── i18n.js      multilanguage: i18n fields, hreflang head, language routes, audit
+└── templates/
+    └── multilang/   copy-ready build scripts for a multilingual site
 ```
 
 ## Running scripts
@@ -119,6 +122,30 @@ All audits are read-only. `collectDocuments()` opens every page and template in 
 | `siteAudit()` | All of the above, with one pass over the documents |
 
 Pass the result of `collectDocuments()` into several audits to avoid opening every document more than once.
+
+### `i18n.js`
+
+Multilanguage helpers. Rules and build order: `agent-docs/etch-multilanguage.md`.
+A project declares its own `LANGUAGES`, `STRINGS`, `TYPES` and `PLAN` in
+`helpers.js` and passes them in; the kit holds no site configuration.
+
+| Helper | Does |
+| --- | --- |
+| `ex(expr)` | wraps an expression in braces — braces never nest, so build inner expressions bare |
+| `jsonSource(name, data)` | a `json` data source definition, for `upsertDataSource` |
+| `headBlock(children)`, `linkEl(name, attrs)` | `etch/head` and a void `<link>` |
+| `i18nFields(type)`, `ensureI18nFields(type, languages)` | the five i18n fields; sets the `language` select options |
+| `ensureNavType(languages)` | the `nav_item` content type, one nav per language |
+| `ensureItem(postType, title, fields)` | find-or-update an item by title |
+| `linkTranslations([ids])` | links a translation group both ways (hreflang needs reciprocity) |
+| `upsertLanguageSources(types, languages)` | one filtered source per (type, language) — route sources take no arguments |
+| `upsertLanguageHelpers(languages, strings)` | `langHome`, `strings`, `stringsFor`, `navFor` |
+| `upsertListingSource(type, key)` | items of one type, filtered by a language argument |
+| `hreflangHead({ canonical, extra })` | self + each translation + one x-default + canonical, absolute |
+| `upsertLanguageRoot(lang, { templateId, homeId, title, noindex })` | the language's entry point (site root, or a static segment) |
+| `upsertDynamicBranch(parentId, lang, { templateId, sourceKey, ... })` | one URL per record of a source |
+| `upsertStaticBranch(parentId, segment, lang, { templateId, postId, ... })` | a fixed segment serving one page |
+| `i18nAudit(languages, types, navType)` | read-only: paths, reciprocity, x-default, nav links, noindex |
 
 ## Adding to the kit
 

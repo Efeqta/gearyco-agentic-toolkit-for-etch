@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(HERE, '..');
-const KIT = ['blocks.js', 'upsert.js', 'audit.js'].map((f) => join(HERE, 'etch', f));
+const KIT = ['blocks.js', 'upsert.js', 'audit.js', 'i18n.js'].map((f) => join(HERE, 'etch', f));
 
 const usage = () => {
   console.error('usage: run.mjs <project> [task.js …] [-e "code"] [-t tab] [--timeout ms] [--no-kit] [--check]');
