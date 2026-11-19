@@ -67,6 +67,10 @@ follow the linked file:
 - **Etch Studio sites:** Before adding content fields, creating or assigning
   templates, or uploading assets, read `agent-docs/etch-studio.md` (slug fields,
   the `index` template, asset collections).
+- **Design handoffs:** Whenever a site comes from a mockup (XD, Figma, PDF or PNG
+  exports), read `agent-docs/design-handoff.md` BEFORE the first stylesheet —
+  which source of truth outranks which, the `TOKENS.md` table to confirm first,
+  and the build-and-review cadence.
 - **Markup:** Before building sections, cards, lists, components, images or
   conditions, read `agent-docs/etch-markup.md` for the full rules and examples.
 - **CSS:** Before writing styles, read `agent-docs/etch-css.md` (examples) and
@@ -175,7 +179,10 @@ Only when explicitly needed. Vanilla, minimal. No jQuery, no frameworks.
 ## Building websites
 
 - If references exist that relate to the HTML you're building, use them. For example, a card or grid with buttons should pull the buttons reference and the grid reference.
-- **Building from screenshots or designs:** build what you're shown, not what general design rules suggest. Don't enlarge hero text "because hero text should be larger" if the design shows standard size.
+- **Building from screenshots or designs:** build what you're shown, not what general design rules suggest. Don't enlarge hero text "because hero text should be larger" if the design shows standard size. Full procedure: `agent-docs/design-handoff.md`. The three rules that carry it:
+  - **Use the design's own spec, not a picture of it.** A spec panel (XD `<view-url>/specs/`, Figma dev mode) or an exported token file outranks any screenshot, every time, for the whole build — not just on the first read. PNG exports carry compression artefacts and antialiasing: near-whites sample one to four levels off, and black text over a tint samples as navy.
+  - **Confirm `projects/<name>/TOKENS.md` before the first stylesheet** — palette, surface-tint-to-ACSS-token map, type scale, spacing, radii, icon sizes, each value tagged `spec`, `measured` or `assumed`. Then build only from it, and never re-measure a confirmed value. If a screenshot disagrees with the table, report the mismatch; don't silently restyle to the screenshot.
+  - **One page per build turn, reviewed before the next page starts.** The first page sets the spacing, tints and class names every later page copies, so it gets reviewed hardest and nothing else starts until it's signed off. Never substitute a whole-site mockup sweep for that review.
 
 ## Output Format
 
