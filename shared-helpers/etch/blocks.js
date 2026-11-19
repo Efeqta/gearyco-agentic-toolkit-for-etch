@@ -39,12 +39,18 @@ const render = (target = 'this.content') =>
   ({ type: 'etch/render', version: 1, context: { name: 'Render' }, children: [], target });
 
 // <etch:img mediaId>; prefer this over img() for media-library images.
+// Lazy by default, like img() and like the markup rules ask for. An
+// above-the-fold image overrides it:
+//   image(id, alt, { loading: 'eager', fetchpriority: 'high' })
 const image = (mediaId, alt = '', attrs = {}) => ({
   type: 'etch/dynamic-image',
   version: 1,
   context: { name: 'Image' },
   children: [],
-  attributes: { mediaId: String(mediaId), alt, useSrcSet: 'true', ...attrs },
+  attributes: {
+    mediaId: String(mediaId), alt, useSrcSet: 'true',
+    loading: 'lazy', decoding: 'async', ...attrs,
+  },
 });
 
 const img = (name, src, attrs = {}) => el('img', name, [], { src, alt: '', loading: 'lazy', decoding: 'async', ...attrs });

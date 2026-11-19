@@ -151,3 +151,19 @@ const ensureCollection = async (name) => {
   const created = await etch.assets.createCollectionAsync(name);
   return created?.id ?? created;
 };
+
+// Asset ids by file name, so a page never hard-codes a number. Re-uploading an
+// asset changes its id (an upload cannot replace a file; it has to be deleted
+// first), which silently breaks every page that named the old one. The file
+// name is the stable contract. Pass a prefix to narrow the map, and `.webp` is
+// optional on lookup: `(await assetIds('lp-'))['hero']`.
+const assetIds = async (prefix = '') => {
+  const out = {};
+  for (const a of await etch.assets.listAsync()) {
+    if (!a.fileName.startsWith(prefix)) continue;
+    const key = a.fileName.slice(prefix.length);
+    out[key] = a.id;
+    out[key.replace(/\.[^.]+$/, '')] = a.id;
+  }
+  return out;
+};

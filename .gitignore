@@ -14,3 +14,6 @@ node_modules/
 # ACSS settings exports
 acss-import.json
 acss-export.json
+
+# Local preview server config
+.claude/launch.json
